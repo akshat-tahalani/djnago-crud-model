@@ -41,4 +41,5 @@ class Lesson(models.Model):
     content = models.TextField()
 
     def __str__(self):
-        return f"{self.title} | Course: {self.course.name}"
+        course_name = self.course.name if self.course else "No Course"
+        return f"{self.title} | Course: {course_name}"
