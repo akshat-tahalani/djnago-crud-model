@@ -1,0 +1,17 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+<h1>All Courses</h1>
+
+<!-- Loop through every course passed from the view -->
+{% for course in courses %}
+<div class="card">
+    <h2>{{ course.name }}</h2>
+    <p>{{ course.description }}</p>
+    <a href="/course/{{ course.id }}/">View Details →</a>
+</div>
+{% empty %}
+    <p>No courses found. Add some from the admin panel.</p>
+{% endfor %}
+
+{% endblock %}

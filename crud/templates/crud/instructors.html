@@ -1,0 +1,16 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+<h1>All Instructors</h1>
+
+{% for instructor in instructors %}
+<div class="card">
+    <h2>{{ instructor.first_name }} {{ instructor.last_name }}</h2>
+    <p>Full time: {{ instructor.full_time }}</p>
+    <p>Total learners: {{ instructor.total_learners }}</p>
+</div>
+{% empty %}
+    <p>No instructors found.</p>
+{% endfor %}
+
+{% endblock %}

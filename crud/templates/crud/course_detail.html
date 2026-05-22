@@ -1,0 +1,31 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+<h1>{{ course.name }}</h1>
+<p>{{ course.description }}</p>
+
+<h2>Instructors</h2>
+{% for instructor in instructors %}
+<div class="card">
+    <p>{{ instructor.first_name }} {{ instructor.last_name }} 
+       — Full time: {{ instructor.full_time }} 
+       — Learners: {{ instructor.total_learners }}
+    </p>
+</div>
+{% empty %}
+    <p>No instructors assigned.</p>
+{% endfor %}
+
+<h2>Lessons</h2>
+{% for lesson in lessons %}
+<div class="card">
+    <h3>{{ lesson.title }}</h3>
+    <p>{{ lesson.content }}</p>
+</div>
+{% empty %}
+    <p>No lessons yet.</p>
+{% endfor %}
+
+<br>
+<a href="/">← Back to all courses</a>
+{% endblock %}
