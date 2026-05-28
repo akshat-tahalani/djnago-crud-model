@@ -2,24 +2,28 @@
 
 {% block content %}
 <h1>{{ course.name }}</h1>
-<p>{{ course.description }}</p>
+<p style="color:#666; margin-bottom:20px;">{{ course.description }}</p>
 
-<h2>Instructors</h2>
+<!-- EnrollView handles this POST request -->
+<form method="post" action="{% url 'enroll' course.id %}">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-green">Enroll Now</button>
+</form>
+
+<h2 style="margin-top:30px;">Instructors</h2>
 {% for instructor in instructors %}
 <div class="card">
-    <p>{{ instructor.first_name }} {{ instructor.last_name }} 
-       — Full time: {{ instructor.full_time }} 
-       — Learners: {{ instructor.total_learners }}
-    </p>
+    <h2>{{ instructor.first_name }} {{ instructor.last_name }}</h2>
+    <p>Full time: {{ instructor.full_time }} | Learners: {{ instructor.total_learners }}</p>
 </div>
 {% empty %}
     <p>No instructors assigned.</p>
 {% endfor %}
 
-<h2>Lessons</h2>
+<h2 style="margin-top:30px;">Lessons</h2>
 {% for lesson in lessons %}
 <div class="card">
-    <h3>{{ lesson.title }}</h3>
+    <h2>{{ lesson.title }}</h2>
     <p>{{ lesson.content }}</p>
 </div>
 {% empty %}
@@ -27,5 +31,10 @@
 {% endfor %}
 
 <br>
-<a href="/">← Back to all courses</a>
+<a href="/" class="btn">← Back to Courses</a>
+
+<!-- Link to the FBV version of the same page for comparison -->
+<a href="{% url 'course_detail_fbv' course.id %}" class="btn" style="background:#8e44ad;">
+    View FBV version
+</a>
 {% endblock %}

@@ -1,0 +1,18 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+<h1>Enroll in {{ course.name }}</h1>
+
+<div class="card">
+    <p>You are about to enroll in <strong>{{ course.name }}</strong>.</p>
+    <p>{{ course.description }}</p>
+
+    <!-- POST request handled by EnrollView.post() -->
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-green">Confirm Enrollment</button>
+        <a href="{% url 'course_detail' course.id %}" class="btn" 
+           style="background:#e74c3c; margin-left:10px;">Cancel</a>
+    </form>
+</div>
+{% endblock %}
