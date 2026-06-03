@@ -1,0 +1,44 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+<h1>Create Account</h1>
+
+<div class="card" style="max-width:500px;">
+    <form method="post" action="{% url 'register' %}">
+        {% csrf_token %}
+
+        <div style="margin-bottom:15px;">
+            <label>Username</label><br>
+            <input type="text" name="username" required
+                   style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>First Name</label><br>
+            <input type="text" name="firstname" required
+                   style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Last Name</label><br>
+            <input type="text" name="lastname" required
+                   style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+
+        <div style="margin-bottom:15px;">
+            <label>Password</label><br>
+            <input type="password" name="password" required
+                   style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:4px;">
+        </div>
+
+        {% if error %}
+            <p style="color:red;">{{ error }}</p>
+        {% endif %}
+
+        <button type="submit" class="btn btn-green" style="width:100%;">Sign Up</button>
+        <p style="margin-top:15px; text-align:center;">
+            Already have an account? <a href="{% url 'login' %}">Login</a>
+        </p>
+    </form>
+</div>
+{% endblock %}

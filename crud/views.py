@@ -1,15 +1,74 @@
+from urllib import request
+
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import View
 from django.views import generic
-from .models import Course, Instructor, Lesson
+from .models import Course, Instructor, Lesson, User
+from django.contrib.auth import authenticate , login , logout
+from django.contrib.auth.models import User as AuthUser
+from django.shortcuts import redirect
+#login is used to creat a session while logout is used to destroy it 
+
+# authernticate is the vredential chekcer
+
+
 
 
 # ════════════════════════════════════════════════════════════════
 # GENERIC VIEWS — least code, most built-in behaviour
 # Django automatically fetches all objects and passes to template
 # ════════════════════════════════════════════════════════════════
+
+def logout_request(request):
+    logout(request)
+    return redirect('index')
+
+def login_request(request):
+    context = {}
+    if request.method == 'POST':
+        # Pull username and password out of the POST data
+        username = request.POST['username']
+        password = request.POST['password']
+        # authenticate() returns user object if valid, None if invalid
+        user = authenticate(username=username, password=password)
+        if user is not None:
+            login(request, user)
+            return redirect('index')
+        else:
+            # Wrong credentials — send back to login page with error
+            context['error'] = 'Invalid username or password'
+            return render(request, 'crud/login.html', context)
+    return render(request, 'crud/login.html', context)
+
+def registration_request(request):
+    context = {}
+    if request.method == 'GET':
+        return render(request, 'crud/register.html', context)
+    elif request.method == 'POST':
+        username = request.POST['username']
+        password = request.POST['password']
+        first_name = request.POST['firstname']
+        last_name = request.POST['lastname']
+        user_exist = False
+        try:
+            AuthUser.objects.get(username=username)
+            user_exist = True
+        except:
+            print("new user: " + username)
+        if not user_exist:
+            user = AuthUser.objects.create_user(
+                username=username,
+                password=password,
+                first_name=first_name,
+                last_name=last_name
+            )
+            login(request, user)
+            return redirect('index')
+        else:
+            context['error'] = 'Username already exists'
+            return render(request, 'crud/register.html', context)
 
 class CourseListView(generic.ListView):
     model = Course

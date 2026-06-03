@@ -16,4 +16,9 @@ urlpatterns = [
 
     # Function Based View — same result, different approach
     path('course/<int:course_id>/detail-fbv/', views.course_detail_fbv, name='course_detail_fbv'),
+
+    path('login/', views.login_request, name='login'),
+    path('logout/', views.logout_request, name='logout'),
+    path('register/', views.registration_request, name='register'),
+
 ]
