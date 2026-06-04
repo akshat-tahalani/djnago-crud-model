@@ -1,16 +1,31 @@
 {% extends 'crud/base.html' %}
 
 {% block content %}
-<h1>All Instructors</h1>
+<h1 class="mb-4">All Instructors</h1>
 
-{% for instructor in instructors %}
-<div class="card">
-    <h2>{{ instructor.first_name }} {{ instructor.last_name }}</h2>
-    <p>Full time: {{ instructor.full_time }}</p>
-    <p>Total Learners: {{ instructor.total_learners }}</p>
+<!-- Bootstrap grid — 3 columns on medium screens, 1 on mobile -->
+<div class="row">
+    {% for instructor in instructors %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title">
+                    {{ instructor.first_name }} {{ instructor.last_name }}
+                </h5>
+                <!-- Bootstrap badge component -->
+                {% if instructor.full_time %}
+                    <span class="badge bg-success">Full Time</span>
+                {% else %}
+                    <span class="badge bg-secondary">Part Time</span>
+                {% endif %}
+                <p class="card-text mt-2">
+                    <strong>Total Learners:</strong> {{ instructor.total_learners }}
+                </p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-muted">No instructors found.</p>
+    {% endfor %}
 </div>
-{% empty %}
-    <p>No instructors found.</p>
-{% endfor %}
-
 {% endblock %}

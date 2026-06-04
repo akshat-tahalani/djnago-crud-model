@@ -1,0 +1,126 @@
+{% extends 'crud/base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <!-- Course Header -->
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <h1 class="mb-2">📚 {{ course.name }}</h1>
+            <p class="text-muted">{{ course.description }}</p>
+        </div>
+    </div>
+
+    <!-- Progress Section -->
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Your Progress</h5>
+            
+            <!-- Progress Percentage -->
+            <div class="mb-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Course Completion</span>
+                    <strong>{{ progress_percentage }}%</strong>
+                </div>
+                <!-- Progress Bar -->
+                <div class="progress" style="height: 25px;">
+                    <div class="progress-bar bg-success" role="progressbar" 
+                         style="width: {{ progress_percentage }}%;" 
+                         aria-valuenow="{{ progress_percentage }}" 
+                         aria-valuemin="0" 
+                         aria-valuemax="100">
+                        {{ progress_percentage }}%
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <h6 class="text-muted">Lessons Completed</h6>
+                        <h4 class="text-success">{{ completed_count }}/{{ total_lessons }}</h4>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <h6 class="text-muted">Remaining</h6>
+                        <h4 class="text-warning">{{ remaining_lessons }}</h4>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <h6 class="text-muted">Status</h6>
+                        <h4 class="{% if progress_percentage == 100 %}text-success{% else %}text-info{% endif %}">
+                            {% if progress_percentage == 100 %}✓ Complete{% else %}In Progress{% endif %}
+                        </h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Lessons Checklist -->
+    <div class="card shadow">
+        <div class="card-body">
+            <h5 class="card-title">📋 Lesson Checklist</h5>
+            
+            {% if lessons %}
+                <div class="list-group">
+                    {% for lesson_info in lessons %}
+                        {% with lesson=lesson_info.lesson completed=lesson_info.completed %}
+                        <div class="list-group-item d-flex align-items-center">
+                            <!-- Checkbox -->
+                            <div class="form-check me-3">
+                                <input class="form-check-input" type="checkbox" 
+                                       {% if completed %}checked disabled{% endif %} 
+                                       disabled style="width: 1.5rem; height: 1.5rem;">
+                            </div>
+
+                            <!-- Lesson Info -->
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1">{{ lesson.title }}</h6>
+                                <small class="text-muted d-block" style="max-height: 40px; overflow: hidden;">
+                                    {{ lesson.content|truncatewords:20 }}
+                                </small>
+                            </div>
+
+                            <!-- Status Badge -->
+                            <span class="badge {% if completed %}bg-success{% else %}bg-secondary{% endif %}">
+                                {% if completed %}✓ Completed{% else %}Not Started{% endif %}
+                            </span>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="alert alert-info" role="alert">
+                    No lessons available for this course yet.
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Back Button -->
+    <div class="mt-4 mb-4">
+        <a href="{% url 'course_detail' course.id %}" class="btn btn-secondary">
+            ← Back to Course
+        </a>
+    </div>
+</div>
+
+<style>
+    .progress {
+        background-color: #e9ecef;
+    }
+    
+    .list-group-item {
+        border-left: 4px solid transparent;
+        transition: all 0.2s;
+    }
+    
+    .list-group-item:hover {
+        background-color: #f8f9fa;
+    }
+</style>
+{% endblock %}
+

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User as AuthUser
 
 # User model — represents anyone using the platform
 class User(models.Model):
@@ -43,3 +44,22 @@ class Lesson(models.Model):
     def __str__(self):
         course_name = self.course.name if self.course else "No Course"
         return f"{self.title} | Course: {course_name}"
+    
+class Enrollment(models.Model):
+    user = models.ForeignKey(AuthUser, on_delete=models.CASCADE)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE)
+    date_enrolled = models.DateField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} enrolled in {self.course} on {self.date_enrolled}"
+    
+
+class Courseprogress(models.Model):
+    enrollment = models.ForeignKey(Enrollment, on_delete=models.CASCADE)
+    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE)
+    completed = models.BooleanField(default=False)
+    completed_date = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        status = "Completed" if self.completed else "In Progress"
+        return f"{self.enrollment.user.username} - {self.lesson.title}: {status}"

@@ -1,40 +1,72 @@
 {% extends 'crud/base.html' %}
 
 {% block content %}
-<h1>{{ course.name }}</h1>
-<p style="color:#666; margin-bottom:20px;">{{ course.description }}</p>
 
-<!-- EnrollView handles this POST request -->
-<form method="post" action="{% url 'enroll' course.id %}">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-green">Enroll Now</button>
-</form>
+<!-- Bootstrap breadcrumb component — shows where you are -->
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item active">{{ course.name }}</li>
+    </ol>
+</nav>
 
-<h2 style="margin-top:30px;">Instructors</h2>
-{% for instructor in instructors %}
-<div class="card">
-    <h2>{{ instructor.first_name }} {{ instructor.last_name }}</h2>
-    <p>Full time: {{ instructor.full_time }} | Learners: {{ instructor.total_learners }}</p>
+<div class="row">
+    <!-- Left column — course info -->
+    <div class="col-md-8">
+        <h1>{{ course.name }}</h1>
+        <p class="text-muted">{{ course.description }}</p>
+
+        <h4 class="mt-4">Lessons</h4>
+        <!-- Bootstrap list group component -->
+        <ul class="list-group mb-4">
+            {% for lesson in lessons %}
+            <li class="list-group-item">
+                <strong>{{ lesson.title }}</strong>
+                <p class="mb-0 text-muted">{{ lesson.content }}</p>
+            </li>
+            {% empty %}
+            <li class="list-group-item text-muted">No lessons yet.</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <!-- Right column — instructors + enroll -->
+    <div class="col-md-4">
+        <!-- Bootstrap card for enroll section -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-body text-center">
+                <h5 class="card-title">Ready to learn?</h5>
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'enroll' course.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success w-100">
+                            Enroll Now
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="text-muted small">Please login to enroll</p>
+                    <a href="/login/" class="btn btn-outline-primary w-100">Login</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <h5>Instructors</h5>
+        {% for instructor in instructors %}
+        <div class="card mb-2 shadow-sm">
+            <div class="card-body py-2">
+                <p class="mb-0">
+                    <strong>{{ instructor.first_name }} {{ instructor.last_name }}</strong>
+                </p>
+                <small class="text-muted">
+                    Learners: {{ instructor.total_learners }}
+                </small>
+            </div>
+        </div>
+        {% empty %}
+        <p class="text-muted">No instructors assigned.</p>
+        {% endfor %}
+    </div>
 </div>
-{% empty %}
-    <p>No instructors assigned.</p>
-{% endfor %}
 
-<h2 style="margin-top:30px;">Lessons</h2>
-{% for lesson in lessons %}
-<div class="card">
-    <h2>{{ lesson.title }}</h2>
-    <p>{{ lesson.content }}</p>
-</div>
-{% empty %}
-    <p>No lessons yet.</p>
-{% endfor %}
-
-<br>
-<a href="/" class="btn">← Back to Courses</a>
-
-<!-- Link to the FBV version of the same page for comparison -->
-<a href="{% url 'course_detail_fbv' course.id %}" class="btn" style="background:#8e44ad;">
-    View FBV version
-</a>
+<a href="/" class="btn btn-secondary mt-2">← Back to Courses</a>
 {% endblock %}

@@ -1,44 +1,47 @@
 {% extends 'crud/base.html' %}
 
 {% block content %}
-<h1>Create Account</h1>
-
-<div class="card" style="max-width:500px;">
-    <form method="post" action="{% url 'register' %}">
-        {% csrf_token %}
-
-        <div style="margin-bottom:15px;">
-            <label>Username</label><br>
-            <input type="text" name="username" required
-                   style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:4px;">
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow">
+            <div class="card-body p-4">
+                <h3 class="card-title text-center mb-4">Create Account</h3>
+                <form method="post" action="{% url 'register' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label class="form-label">Username</label>
+                        <input type="text" name="username" 
+                               class="form-control" required>
+                    </div>
+                    <div class="row">
+                        <div class="col mb-3">
+                            <label class="form-label">First Name</label>
+                            <input type="text" name="firstname" 
+                                   class="form-control" required>
+                        </div>
+                        <div class="col mb-3">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" name="lastname" 
+                                   class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" 
+                               class="form-control" required>
+                    </div>
+                    {% if error %}
+                        <div class="alert alert-danger">{{ error }}</div>
+                    {% endif %}
+                    <button type="submit" 
+                            class="btn btn-success w-100">Sign Up</button>
+                </form>
+                <p class="text-center mt-3">
+                    Already have an account? 
+                    <a href="/login/">Login</a>
+                </p>
+            </div>
         </div>
-
-        <div style="margin-bottom:15px;">
-            <label>First Name</label><br>
-            <input type="text" name="firstname" required
-                   style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:4px;">
-        </div>
-
-        <div style="margin-bottom:15px;">
-            <label>Last Name</label><br>
-            <input type="text" name="lastname" required
-                   style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:4px;">
-        </div>
-
-        <div style="margin-bottom:15px;">
-            <label>Password</label><br>
-            <input type="password" name="password" required
-                   style="width:100%; padding:8px; margin-top:5px; border:1px solid #ddd; border-radius:4px;">
-        </div>
-
-        {% if error %}
-            <p style="color:red;">{{ error }}</p>
-        {% endif %}
-
-        <button type="submit" class="btn btn-green" style="width:100%;">Sign Up</button>
-        <p style="margin-top:15px; text-align:center;">
-            Already have an account? <a href="{% url 'login' %}">Login</a>
-        </p>
-    </form>
+    </div>
 </div>
 {% endblock %}

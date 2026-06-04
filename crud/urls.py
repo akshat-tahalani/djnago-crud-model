@@ -14,6 +14,9 @@ urlpatterns = [
     # Class Based View — handles GET and POST separately
     path('course/<int:course_id>/enroll/', views.EnrollView.as_view(), name='enroll'),
 
+    # Learning progress view
+    path('course/<int:course_id>/learning/', views.LearningView.as_view(), name='learning'),
+
     # Function Based View — same result, different approach
     path('course/<int:course_id>/detail-fbv/', views.course_detail_fbv, name='course_detail_fbv'),
 

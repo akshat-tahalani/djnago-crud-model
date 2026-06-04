@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.views import View
 from django.views import generic
-from .models import Course, Instructor, Lesson, User
+from .models import Course, Enrollment, Instructor, Lesson, User, Courseprogress
 from django.contrib.auth import authenticate , login , logout
 from django.contrib.auth.models import User as AuthUser
 from django.shortcuts import redirect
@@ -29,8 +29,13 @@ def login_request(request):
     context = {}
     if request.method == 'POST':
         # Pull username and password out of the POST data
-        username = request.POST['username']
-        password = request.POST['password']
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        
+        if not username or not password:
+            context['error'] = 'Username and password are required'
+            return render(request, 'crud/login.html', context)
+        
         # authenticate() returns user object if valid, None if invalid
         user = authenticate(username=username, password=password)
         if user is not None:
@@ -47,10 +52,15 @@ def registration_request(request):
     if request.method == 'GET':
         return render(request, 'crud/register.html', context)
     elif request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        first_name = request.POST['firstname']
-        last_name = request.POST['lastname']
+        username = request.POST.get('username', '')
+        password = request.POST.get('password', '')
+        first_name = request.POST.get('firstname', '')
+        last_name = request.POST.get('lastname', '')
+        
+        if not username or not password or not first_name or not last_name:
+            context['error'] = 'All fields are required'
+            return render(request, 'crud/register.html', context)
+        
         user_exist = False
         try:
             AuthUser.objects.get(username=username)
@@ -114,10 +124,22 @@ class EnrollView(View):
 
     # post() handles POST requests (form submissions)
     def post(self, request, course_id):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('login'))
         course = get_object_or_404(Course, id=course_id)
         # enrollment logic goes here in future
+        if request.user.is_authenticated:
+            user = request.user
+            # Check if the user is already enrolled in the course
+            if not Enrollment.objects.filter(user=user, course=course).exists():
+                Enrollment.objects.create(user=user, course=course)
         # after processing, redirect back to course detail
-        return HttpResponseRedirect(reverse('course_detail', args=(course_id,)))
+        # redirect to a new url called learning passing course id
+        return HttpResponseRedirect(reverse('learning', args=(course_id,)))
+
+
+
+
 
 
 # ════════════════════════════════════════════════════════════════
@@ -142,3 +164,43 @@ def course_detail_fbv(request, course_id):
         'instructors': instructors
     }
     return render(request, 'crud/course_detail.html', context)
+
+
+class LearningView(View):
+    def get(self, request, course_id):
+        if not request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('login'))
+        
+        course = get_object_or_404(Course, id=course_id)
+        lessons = course.lesson_set.all()
+        
+        # Get the user's enrollment
+        enrollment = get_object_or_404(Enrollment, user=request.user, course=course)
+        
+        # Get all course progress for this enrollment
+        progress_list = Courseprogress.objects.filter(enrollment=enrollment)
+        
+        # Calculate statistics
+        total_lessons = lessons.count()
+        completed_count = progress_list.filter(completed=True).count()
+        remaining_lessons = total_lessons - completed_count
+        progress_percentage = int((completed_count / total_lessons * 100)) if total_lessons > 0 else 0
+        
+        # Build lessons data with completion status
+        lessons_with_progress = []
+        for lesson in lessons:
+            progress = progress_list.filter(lesson=lesson).first()
+            lessons_with_progress.append({
+                'lesson': lesson,
+                'completed': progress.completed if progress else False
+            })
+        
+        context = {
+            'course': course,
+            'lessons': lessons_with_progress,
+            'total_lessons': total_lessons,
+            'completed_count': completed_count,
+            'remaining_lessons': remaining_lessons,
+            'progress_percentage': progress_percentage,
+        }
+        return render(request, 'crud/learning.html', context)

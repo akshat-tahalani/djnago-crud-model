@@ -1,5 +1,9 @@
 from django.contrib import admin
-from .models import User, Instructor, Course, Lesson
+from .models import Courseprogress, User, Instructor, Course, Lesson
+from .models import Enrollment, Courseprogress
+
+admin.site.register(Enrollment)
+admin.site.register(Courseprogress)
 
 # ── INLINE CLASSES ────────────────────────────────────────────────
 
